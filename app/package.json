@@ -1,0 +1,13 @@
+{
+  "name": "istio-test-app",
+  "version": "1.0.0",
+  "description": "A simple test application for Istio canary deployments.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "ejs": "^3.1.6"
+  }
+}

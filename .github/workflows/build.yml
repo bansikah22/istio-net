@@ -1,0 +1,24 @@
+name: Build Docker Images
+
+on:
+  push:
+    branches-ignore:
+      - 'master'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: npm install
+      working-directory: ./app
+
+    - name: Build stable image locally
+      run: docker build --build-arg APP_VERSION=index.js -t istio-test-app:latest-stable ./app
+
+    - name: Build canary image locally
+      run: docker build --build-arg APP_VERSION=index.v2.js -t istio-test-app:latest-canary ./app
