@@ -34,11 +34,14 @@ app.get('/', (req, res) => {
 
 app.post('/calculate', (req, res) => {
   const number = parseInt(req.body.number, 10);
+  if (isNaN(number) || number < 0) {
+    return res.render('index', { version: version, number: null, primes: null, time: null, error: 'Please enter a valid non-negative number.' });
+  }
   const startTime = Date.now();
   const primes = findPrimes(number);
   const endTime = Date.now();
   const timeTaken = (endTime - startTime) / 1000; // in seconds
-  res.render('index', { version: version, number: number, primes: primes, time: timeTaken });
+  res.render('index', { version: version, number: number, primes: primes, time: timeTaken, error: null });
 });
 
 app.listen(port, () => {

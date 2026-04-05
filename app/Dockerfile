@@ -25,4 +25,4 @@ EXPOSE 3001
 
 # Define the build argument and the command to run the app
 ARG APP_VERSION=index.js
-CMD ["node", "${APP_VERSION}"]
+CMD node ${APP_VERSION}

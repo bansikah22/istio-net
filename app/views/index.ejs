@@ -25,6 +25,10 @@
       <button type="submit">Calculate</button>
     </form>
 
+    <% if (error) { %>
+      <p style="color: red;"><%= error %></p>
+    <% } %>
+
     <% if (number !== null) { %>
       <div class="result">
         <h2>Results for <%= number %></h2>
