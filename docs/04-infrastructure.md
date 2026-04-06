@@ -14,6 +14,25 @@ Our Terraform configuration is located in the `infra/` directory and is broken d
 -   **`main.tf`:** This is the main configuration file, where we define the VPC and the EKS cluster itself. We use the official `terraform-aws-modules` for both the VPC and EKS, as they provide a robust and production-ready foundation.
 -   **`variables.tf`:** This file defines variables for our configuration, such as the AWS region and the cluster name. This makes our configuration more flexible and reusable.
 -   **`outputs.tf`:** This file defines outputs for our configuration, such as the cluster endpoint and the CA certificate. This makes it easier to connect to the cluster after it has been created.
+-   **`istio.tf`:** This file contains the Helm release definitions for installing the core Istio components (`istio-base`, `istiod`, and the `istio-ingress` gateway) into our cluster.
+
+### Node Group Configuration
+
+The EKS cluster is configured with a single managed node group named `node-group-1`. Here are the key details:
+
+-   **Instance Type**: The nodes are `t3.medium` instances, which provide a good balance of compute, memory, and network resources for our application.
+-   **Scaling**: The node group is configured to autoscale between a minimum of 1 and a maximum of 3 nodes, with a desired count of 2 nodes. This allows the cluster to handle varying loads while maintaining cost-efficiency.
+-   **Networking**: The nodes are provisioned in the **private subnets** of our VPC. This is a critical security measure that ensures our worker nodes are not directly exposed to the public internet. They can initiate outbound connections through the NAT Gateway, but incoming traffic must be routed through a load balancer or ingress controller.
+
+### Istio Installation via Terraform
+
+The `istio.tf` file automates the installation of Istio's core components using the official Istio Helm charts. This is a declarative approach that ensures a consistent and repeatable Istio installation.
+
+-   **`istio-base`**: This chart installs the foundational Custom Resource Definitions (CRDs) that are required by Istio.
+-   **`istiod`**: This chart installs the `istiod` deployment, which is the core of the Istio control plane. It is responsible for service discovery, configuration, and certificate management.
+-   **`istio-ingress`**: This chart installs the Istio Ingress Gateway, which is an Envoy-based proxy that manages incoming traffic to the service mesh.
+
+By managing the Istio installation with Terraform, we can ensure that it is tightly integrated with our EKS cluster and that its lifecycle is managed alongside the rest of our infrastructure.
 
 ### How to Apply the Configuration
 
