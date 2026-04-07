@@ -4,7 +4,7 @@ kind: DestinationRule
 metadata:
   name: {{ include "prime-calculator.fullname" . }}
 spec:
-  host: prime-calculator.default.svc.cluster.local
+  host: {{ include "prime-calculator.fullname" . }}
   subsets:
   - name: stable
     labels:
@@ -26,20 +26,20 @@ spec:
   - route:
     {{- if and .Values.canary .Values.canary.enabled }}
     - destination:
-        host: prime-calculator.default.svc.cluster.local
+        host: {{ include "prime-calculator.fullname" . }}
         subset: stable
         port:
           number: {{ .Values.service.port }}
       weight: 90
     - destination:
-        host: prime-calculator.default.svc.cluster.local
+        host: {{ include "prime-calculator.fullname" . }}
         subset: canary
         port:
           number: {{ .Values.service.port }}
       weight: 10
     {{- else }}
     - destination:
-        host: prime-calculator.default.svc.cluster.local
+        host: {{ include "prime-calculator.fullname" . }}
         subset: stable
         port:
           number: {{ .Values.service.port }}
