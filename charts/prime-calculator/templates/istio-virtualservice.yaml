@@ -1,0 +1,17 @@
+{{- if .Values.istio.enabled -}}
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "prime-calculator.fullname" . }}-vs
+spec:
+  hosts:
+  - "{{ .Values.istio.host }}"
+  gateways:
+  - {{ include "prime-calculator.fullname" . }}-gateway
+  http:
+  - route:
+    - destination:
+        host: {{ include "prime-calculator.fullname" . }}
+        port:
+          number: {{ .Values.service.port }}
+{{- end }}

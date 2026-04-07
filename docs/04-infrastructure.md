@@ -50,3 +50,36 @@ terraform apply
 ```
 
 This will provision the VPC, the EKS cluster, and all the necessary resources in your AWS account.
+
+## Connecting to the Cluster
+
+Once the `terraform apply` command has completed successfully, the EKS cluster will be running. To interact with it using `kubectl`, you need to update your local kubeconfig file.
+
+1.  **Update Kubeconfig:**
+
+    Run the following AWS CLI command to automatically configure `kubectl`. You will need to replace `<aws-region>` and `<cluster-name>` with the values you used in your `terraform.tfvars` file (or the defaults in `variables.tf`).
+
+    ```bash
+    aws eks update-kubeconfig --region <aws-region> --name <cluster-name>
+    ```
+
+    For example, if you used the default variable values:
+    ```bash
+    aws eks update-kubeconfig --region us-east-1 --name istio-eks-cluster
+    ```
+
+2.  **Verify Connection:**
+
+    After updating your kubeconfig, you can verify that you can connect to the cluster by listing the worker nodes.
+
+    ```bash
+    kubectl get nodes
+    ```
+
+    You should see an output listing the nodes that were provisioned by Terraform, similar to this:
+
+    ```
+    NAME                                           STATUS   ROLES    AGE   VERSION
+    ip-10-0-1-123.us-east-1.compute.internal   Ready    <none>   15m   v1.34.0-eks-abcde
+    ip-10-0-2-45.us-east-1.compute.internal    Ready    <none>   15m   v1.34.0-eks-abcde
+    ```
