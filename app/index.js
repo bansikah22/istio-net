@@ -29,7 +29,7 @@ function findPrimes(max) {
 }
 
 app.get('/', (req, res) => {
-  res.render('index', { version: version, number: null, primes: null, time: null });
+  res.render('index', { version: version, number: null, primes: null, time: null, error: null });
 });
 
 app.post('/calculate', (req, res) => {
@@ -47,3 +47,8 @@ app.post('/calculate', (req, res) => {
 app.listen(port, () => {
   console.log(`App version ${version} listening at http://localhost:${port}`);
 });
+
+// Keep the process alive
+setInterval(() => {
+  // This function does nothing, but it prevents the process from exiting.
+}, 1000 * 60 * 60);

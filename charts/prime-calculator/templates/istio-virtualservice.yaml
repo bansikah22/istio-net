@@ -1,8 +1,22 @@
 {{- if .Values.istio.enabled -}}
 apiVersion: networking.istio.io/v1alpha3
+kind: DestinationRule
+metadata:
+  name: {{ include "prime-calculator.fullname" . }}
+spec:
+  host: prime-calculator.default.svc.cluster.local
+  subsets:
+  - name: stable
+    labels:
+      version: stable
+  - name: canary
+    labels:
+      version: canary
+---
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  name: {{ include "prime-calculator.fullname" . }}-vs
+  name: {{ include "prime-calculator.fullname" . }}
 spec:
   hosts:
   - "{{ .Values.istio.host }}"
@@ -10,8 +24,25 @@ spec:
   - {{ include "prime-calculator.fullname" . }}-gateway
   http:
   - route:
+    {{- if and .Values.canary .Values.canary.enabled }}
     - destination:
-        host: {{ include "prime-calculator.fullname" . }}
+        host: prime-calculator.default.svc.cluster.local
+        subset: stable
         port:
           number: {{ .Values.service.port }}
+      weight: 90
+    - destination:
+        host: prime-calculator.default.svc.cluster.local
+        subset: canary
+        port:
+          number: {{ .Values.service.port }}
+      weight: 10
+    {{- else }}
+    - destination:
+        host: prime-calculator.default.svc.cluster.local
+        subset: stable
+        port:
+          number: {{ .Values.service.port }}
+      weight: 100
+    {{- end }}
 {{- end }}

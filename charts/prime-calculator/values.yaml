@@ -6,13 +6,24 @@ replicaCount: 1
 
 image:
   repository: ghcr.io/bansikah22/istio-net/istio-test-app
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   # Overridden by the version specified in the Chart.yaml
-  tag: ""
-
-imagePullSecrets: []
-nameOverride: ""
-fullnameOverride: ""
+  tag: "v1.0.0-stable"
+  
+  # Canary deployment settings
+  canary:
+    # Set to true to deploy a canary version alongside the stable version
+    enabled: false
+    # The image tag for the canary version
+    tag: "v2.0.0-canary"
+    # Number of replicas for the canary deployment
+    replicaCount: 1
+  
+  imagePullSecrets:
+    # The name of the secret to use for pulling private images
+    - name: ghcr-credentials
+  nameOverride: ""
+  fullnameOverride: ""
 
 serviceAccount:
   # Specifies whether a service account should be created

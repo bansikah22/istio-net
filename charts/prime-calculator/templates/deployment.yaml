@@ -1,26 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "prime-calculator.fullname" . }}
+  name: {{ include "prime-calculator.fullname" . }}-stable
   labels:
     {{- include "prime-calculator.labels" . | nindent 4 }}
+    version: stable
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "prime-calculator.selectorLabels" . | nindent 6 }}
+      version: stable
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
       annotations:
+        # The following annotation explicitly enables Istio sidecar injection for this deployment.
+        # This is an alternative to labeling the namespace, providing more granular control.
+        # sidecar.istio.io/inject: "true"
+        {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
       labels:
         {{- include "prime-calculator.selectorLabels" . | nindent 8 }}
+        version: stable
     spec:
-      {{- with .Values.imagePullSecrets }}
+      # This block uses the imagePullSecrets from values.yaml to authorize pulling private images.
+      {{- with .Values.image.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
@@ -31,24 +36,12 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 3001
               protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 30
-            periodSeconds: 10
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-            initialDelaySeconds: 5
-            periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -63,3 +56,64 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+---
+{{- if and .Values.canary .Values.canary.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "prime-calculator.fullname" . }}-canary
+  labels:
+    {{- include "prime-calculator.labels" . | nindent 4 }}
+    version: canary
+spec:
+  replicas: {{ .Values.canary.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "prime-calculator.selectorLabels" . | nindent 6 }}
+      version: canary
+  template:
+    metadata:
+      annotations:
+        # The following annotation explicitly enables Istio sidecar injection for this deployment.
+        # This is an alternative to labeling the namespace, providing more granular control.
+        # sidecar.istio.io/inject: "true"
+        {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
+      labels:
+        {{- include "prime-calculator.selectorLabels" . | nindent 8 }}
+        version: canary
+    spec:
+      # This block uses the imagePullSecrets from values.yaml to authorize pulling private images.
+      {{- with .Values.image.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "prime-calculator.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.canary.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 3001
+              protocol: TCP
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

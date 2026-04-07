@@ -24,5 +24,5 @@ COPY . .
 EXPOSE 3001
 
 # Define the build argument and the command to run the app
-ARG APP_VERSION=index.v2.js
-CMD node ${APP_VERSION}
+ARG APP_VERSION=index.js
+CMD ["npm", "start"]
