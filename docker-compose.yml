@@ -1,0 +1,6 @@
+services:
+  prime-calculator:
+    build:
+      context: ./app
+    ports:
+      - "3001:3001"
