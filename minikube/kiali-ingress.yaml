@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: kiali-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use Istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http-kiali
+      protocol: HTTP
+    hosts:
+    - "kiali.10.98.111.201.nip.io" # Using a magic domain for local access
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: kiali-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - "kiali.10.98.111.201.nip.io"
+  gateways:
+  - kiali-gateway
+  http:
+  - route:
+    - destination:
+        host: kiali
+        port:
+          number: 20001

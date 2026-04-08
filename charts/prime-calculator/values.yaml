@@ -72,7 +72,7 @@ istio:
   # Set to true to create Istio Gateway and VirtualService resources
   enabled: false
   # The host to expose the service on. Use "*" for any host in a local environment.
-  host: "*"
+  host: "app.10.98.111.201.nip.io"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious

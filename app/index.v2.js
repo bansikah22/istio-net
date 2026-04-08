@@ -47,3 +47,6 @@ app.post('/calculate', (req, res) => {
 app.listen(port, () => {
   console.log(`App version ${version} listening at http://localhost:${port}`);
 });
+
+// Keep the process alive
+setInterval(() => {}, 1000 * 60 * 60);

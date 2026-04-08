@@ -72,18 +72,52 @@ Now that your cluster is running and `istioctl` is installed, you can install th
 
     You should see pods for `istiod`, `istio-egressgateway`, and `istio-ingressgateway`, among others.
 
-## Step 5: Enable the Ingress Gateway
+## Step 5: Install Observability Addons (Kiali & Prometheus)
 
-To expose our application to traffic from outside the cluster, we need to use the Istio Ingress Gateway. Minikube has a special command to create a tunnel to the gateway service.
+To visualize your service mesh and view traffic flowing through it, you need to install the Kiali dashboard and Prometheus (which collects the metrics that Kiali uses).
 
-1.  **Open a new terminal window.** Do not close your existing terminal.
-2.  **Start the Minikube tunnel:**
-    Run the following command in the **new** terminal. This command will run continuously, creating a network route from your local machine to the services inside the Minikube cluster.
-
+1.  **Install the addons manually:**
+    This approach avoids the need to download the full Istio release. Apply the manifests directly from the official Istio repository (replace `1.29` with your desired Istio version).
+    
     ```bash
-    minikube tunnel
+    kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.29/samples/addons/prometheus.yaml
+    kubectl apply -f https://raw.githubusercontent.com/istio/istio/release-1.29/samples/addons/kiali.yaml
     ```
 
-    Keep this terminal window open. You can now access the Istio Ingress Gateway using the `EXTERNAL-IP` address shown in the `kubectl get svc` command for `istio-ingressgateway`.
+2.  **Verify installation:**
+    ```bash
+    kubectl get pods -n istio-system | grep -E 'kiali|prometheus'
+    ```
 
-Your local Kubernetes and Istio environment is now ready! You can proceed with deploying the application.
+3.  **Access the Dashboards:**
+    The observability dashboards are exposed through the Istio Ingress Gateway.
+    - **Kiali:** [http://kiali.127.0.0.1.nip.io](http://kiali.127.0.0.1.nip.io)
+    - **Prometheus:** [http://prometheus.127.0.0.1.nip.io](http://prometheus.127.0.0.1.nip.io)
+    
+    *(Note: This requires the `minikube tunnel` command to be running, as described in the next step. No `/etc/hosts` file editing is needed thanks to the `nip.io` service.)*
+
+## Step 6: Access Services
+
+With the `minikube tunnel` running, you can now access all services.
+
+1.  **Find the Ingress Gateway IP:**
+    In a new terminal, get the external IP address of the gateway:
+    ```bash
+    kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+    ```
+
+2.  **Construct the URLs:**
+    Use the IP from the previous step to access the services. No `/etc/hosts` file editing is needed.
+    -   **Prime Calculator Application:** `http://app.<YOUR_GATEWAY_IP>.nip.io`
+    -   **Kiali Dashboard:** `http://kiali.<YOUR_GATEWAY_IP>.nip.io`
+    -   **Prometheus UI:** `http://prometheus.<YOUR_GATEWAY_IP>.nip.io`
+
+## Step 7: Enable Strict mTLS (Optional)
+
+To enforce encrypted communication between services within the mesh, you can apply a `PeerAuthentication` policy. This will cause Kiali to display a "lock" icon on the traffic graph.
+
+1.  **Apply the policy:**
+    ```bash
+    kubectl apply -f minikube/mtls-policy.yaml
+    ```
+Your local Kubernetes and Istio environment is now ready!

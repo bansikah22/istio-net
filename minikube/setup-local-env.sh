@@ -77,7 +77,20 @@ echo "⏳ Installing Istio with the 'demo' profile..."
 istioctl install --set profile=demo -y
 echo "✅ Istio installation complete."
 
-# --- Step 4: Create Image Pull Secret ---
+# --- Step 4: Install Istio Observability Addons (Prometheus & Kiali) ---
+echo "⏳ Installing Prometheus and Kiali addons..."
+# We use the raw github URLs to ensure we get the manifests matching our ISTIO_VERSION
+kubectl apply -f "https://raw.githubusercontent.com/istio/istio/release-1.29/samples/addons/prometheus.yaml"
+kubectl apply -f "https://raw.githubusercontent.com/istio/istio/release-1.29/samples/addons/kiali.yaml"
+# Apply the ingress configurations
+kubectl apply -f "${PROJECT_ROOT}/minikube/kiali-ingress.yaml"
+kubectl apply -f "${PROJECT_ROOT}/minikube/prometheus-ingress.yaml"
+# Apply the strict mTLS policy
+kubectl apply -f "${PROJECT_ROOT}/minikube/mtls-policy.yaml"
+
+echo "✅ Istio observability addons installation started."
+
+# --- Step 5: Create Image Pull Secret ---
 # IMPORTANT: Replace the placeholders with your actual GitHub credentials.
 # You can create a Personal Access Token (PAT) here: https://github.com/settings/tokens/new
 # The PAT only needs the `read:packages` scope.
@@ -98,7 +111,7 @@ kubectl create secret docker-registry ghcr-credentials \
   --docker-password="$GITHUB_PAT"
 echo "✅ Image pull secret created."
 
-# --- Step 5: Deploy Application ---
+# --- Step 6: Deploy Application ---
 echo "⏳ Deploying the application using Helm..."
 helm uninstall ${HELM_RELEASE_NAME} > /dev/null 2>&1 || true
 # The chart now defaults to the correct stable image from ghcr.io.
@@ -115,8 +128,12 @@ echo "1. Open a NEW terminal window."
 echo "2. Run the following command to expose the Istio Ingress Gateway:"
 echo "   minikube tunnel"
 echo ""
-echo "3. In another terminal, find the gateway's external IP address with:"
-echo "   kubectl get svc istio-ingressgateway -n istio-system"
+echo "3. Once the tunnel is active, access your services at the following URLs:"
+GATEWAY_IP=$(kubectl get svc istio-ingressgateway -n istio-system -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+echo "   - Prime Calculator App: http://app.${GATEWAY_IP}.nip.io"
+echo "   - Kiali Dashboard:      http://kiali.${GATEWAY_IP}.nip.io"
+echo "   - Prometheus UI:        http://prometheus.${GATEWAY_IP}.nip.io"
 echo ""
-echo "4. Access the application at http://<EXTERNAL-IP>"
+echo "   (Note: The 'minikube tunnel' command must be running in another terminal.)"
+echo "--------------------------------------------------"
 echo "--------------------------------------------------"

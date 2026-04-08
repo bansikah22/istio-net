@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: prometheus-gateway
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway # use Istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http-prometheus
+      protocol: HTTP
+    hosts:
+    - "prometheus.10.98.111.201.nip.io"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: prometheus-vs
+  namespace: istio-system
+spec:
+  hosts:
+  - "prometheus.10.98.111.201.nip.io"
+  gateways:
+  - prometheus-gateway
+  http:
+  - route:
+    - destination:
+        host: prometheus
+        port:
+          number: 9090
