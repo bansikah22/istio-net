@@ -26,3 +26,7 @@ To get started with the local development environment, please follow the detaile
 
 This guide will walk you through setting up Minikube, installing Istio, and deploying the sample application and observability dashboards.
 
+## License
+
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.
+
