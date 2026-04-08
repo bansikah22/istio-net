@@ -1,5 +1,7 @@
 # Prime Number Calculator Application
 
+![Application Screenshot](../docs/images/working%20app%20in%20k8s.png)
+
 This is a simple Node.js web application that calculates prime numbers up to a given integer. It is designed to be a test application for Istio canary deployments.
 
 There are two versions of the application:
