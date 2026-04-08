@@ -10,7 +10,7 @@
 # for resources in the private subnets (e.g., worker nodes).
 module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
-  version = "5.0.0"
+  version = "6.6.1"
 
   name = "${var.cluster_name}-vpc"
 
