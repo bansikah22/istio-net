@@ -114,6 +114,8 @@ With the `minikube tunnel` running, you can now access all services.
     -   **Kiali Dashboard:** `http://kiali.<YOUR_GATEWAY_IP>.nip.io`
     -   **Prometheus UI:** `http://prometheus.<YOUR_GATEWAY_IP>.nip.io`
 
+    ![Prometheus UI Screenshot](../docs/images/prometheus.png)
+
 ## Step 7: Enable Strict mTLS (Optional)
 
 To enforce encrypted communication between services within the mesh, you can apply a `PeerAuthentication` policy. This will cause Kiali to display a "lock" icon on the traffic graph.
