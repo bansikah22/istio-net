@@ -121,3 +121,7 @@ To enforce encrypted communication between services within the mesh, you can app
     kubectl apply -f minikube/mtls-policy.yaml
     ```
 Your local Kubernetes and Istio environment is now ready!
+
+## Canary Deployment Notes
+
+The included Helm chart (`charts/prime-calculator`) is pre-configured for canary deployments. When you enable `canary.enabled=true` in `values.yaml` (or via a `--set` flag), the `VirtualService` is automatically configured to split traffic. By default, it sends **90%** of requests to the `stable` deployment and **10%** to the `canary` deployment. This ratio is defined in `charts/prime-calculator/templates/istio-virtualservice.yaml` and can be customized as needed.
