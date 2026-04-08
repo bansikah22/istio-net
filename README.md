@@ -1,45 +1,23 @@
-# Istio Canary Deployment Demo
+# Istio Service Mesh Playground
 
-This project is a hands-on demonstration of canary releases using Istio on a Kubernetes cluster. It features a simple "Prime Calculator" web application, a Helm chart for deployment, and a fully automated local setup script for Minikube.
+This project provides a comprehensive, hands-on environment for exploring and learning about the Istio service mesh. It includes a sample microservice application, a complete local Minikube setup, and a full suite of observability tools.
 
-The primary goal is to provide a practical, working example of how to leverage Istio's traffic management capabilities to safely roll out new versions of an application.
+The primary goal of this repository is to serve as a practical learning tool for understanding advanced Istio concepts such as canary deployments, traffic management, and network security in a controlled, easy-to-manage setting.
+
+![Kiali Traffic Graph showing a canary deployment with mTLS enabled](docs/images/working-app-with-mtl-both-versions.png)
+
+## Features
+
+-   **Canary Deployments:** The Helm chart is pre-configured to deploy `stable` and `canary` versions of the application, with a `VirtualService` that splits traffic 90/10 by default.
+-   **Full Observability Stack:** Includes manifests to deploy and expose Prometheus and Kiali, giving you a complete view of your service mesh.
+-   **Persistent Dashboards:** Kiali and Prometheus are exposed with stable URLs through the main Istio Ingress Gateway using `nip.io` for easy local access.
+-   **Automated Local Setup:** A single script (`minikube/setup-local-env.sh`) completely automates the creation of the Minikube cluster, Istio installation, and deployment of the application and observability tools.
+-   **Network Security:** Includes a `PeerAuthentication` policy to enforce strict mutual TLS (mTLS) for all traffic within the service mesh.
+-   **Comprehensive Documentation:** Detailed setup instructions and explanations are provided for both automated and manual processes.
 
 ## Getting Started
 
-A shell script is provided to automate the entire setup of a local development environment using Minikube.
+To get started with the local development environment, please follow the detailed instructions in the **[Minikube Setup Guide](minikube/README.md)**.
 
-### Prerequisites
+This guide will walk you through setting up Minikube, installing Istio, and deploying the sample application and observability dashboards.
 
-- [Minikube](https://minikube.sigs.k8s.io/docs/start/)
-- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl/)
-- [Helm](https://helm.sh/docs/intro/install/)
-
-### Automated Setup
-
-The setup script will:
-1.  Ensure Minikube is running with a compatible version of Kubernetes.
-2.  Install Istio.
-3.  Create the necessary image pull secrets.
-4.  Deploy the application using the provided Helm chart.
-
-To run the script, execute the following command from the root of the project:
-
-```bash
-./minikube/setup-local-env.sh
-```
-
-After the script completes, it will provide you with the final instructions to access the application through the Istio Ingress Gateway.
-
-## Project Structure
-
--   **/app**: Contains the Node.js source code for the simple web application.
--   **/charts**: Contains the Helm chart used to deploy the application and its associated Kubernetes and Istio resources.
--   **/docs**: Contains project documentation and images.
--   **/infra**: Contains Terraform code for provisioning cloud infrastructure (not used in the local setup).
--   **/minikube**: Contains the automated setup script for the local Minikube environment.
-
-## Key Features
-
--   **Automated Local Setup:** Get a fully configured local environment running with a single command.
--   **Istio Integration:** Demonstrates the use of Istio's `Gateway`, `VirtualService`, and `DestinationRule` for traffic management.
--   **Canary Releases:** The Helm chart is pre-configured to support canary releases, allowing you to safely test new versions of the application with a subset of traffic.
