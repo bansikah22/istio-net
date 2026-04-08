@@ -89,12 +89,14 @@ To visualize your service mesh and view traffic flowing through it, you need to 
     kubectl get pods -n istio-system | grep -E 'kiali|prometheus'
     ```
 
-3.  **Access the Dashboards:**
-    The observability dashboards are exposed through the Istio Ingress Gateway.
-    - **Kiali:** [http://kiali.127.0.0.1.nip.io](http://kiali.127.0.0.1.nip.io)
-    - **Prometheus:** [http://prometheus.127.0.0.1.nip.io](http://prometheus.127.0.0.1.nip.io)
+3.  **Configure Ingress for Dashboards:**
+    To provide stable URLs for Kiali and Prometheus, apply the pre-configured Ingress resources. These use Istio `Gateways` and `VirtualServices` to route traffic from a unique hostname to each service.
+    ```bash
+    kubectl apply -f minikube/kiali-ingress.yaml
+    kubectl apply -f minikube/prometheus-ingress.yaml
+    ```
     
-    *(Note: This requires the `minikube tunnel` command to be running, as described in the next step. No `/etc/hosts` file editing is needed thanks to the `nip.io` service.)*
+    *(Note: You will need to update the hostnames in these files with the correct external IP of your ingress gateway, as described in Step 6).*
 
 ## Step 6: Access Services
 
