@@ -1,5 +1,10 @@
 # Istio Service Mesh Playground
 
+[![CI](https://github.com/bansikah22/istio-net/actions/workflows/ci.yml/badge.svg)](https://github.com/bansikah22/istio-net/actions/workflows/ci.yml)
+[![Build](https://github.com/bansikah22/istio-net/actions/workflows/build.yml/badge.svg)](https://github.com/bansikah22/istio-net/actions/workflows/build.yml)
+[![Release](https://github.com/bansikah22/istio-net/actions/workflows/release.yml/badge.svg)](https://github.com/bansikah22/istio-net/actions/workflows/release.yml)
+[![Dependabot](https://img.shields.io/badge/Dependabot-enabled-blue.svg?style=flat&logo=dependabot)](https://github.com/bansikah22/istio-net/pulls?q=is%3Apr+author%3Aapp%2Fdependabot)
+
 This project provides a comprehensive, hands-on environment for exploring and learning about the Istio service mesh. It includes a sample microservice application, a complete local Minikube setup, and a full suite of observability tools.
 
 The primary goal of this repository is to serve as a practical learning tool for understanding advanced Istio concepts such as canary deployments, traffic management, and network security in a controlled, easy-to-manage setting.
